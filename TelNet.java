@@ -42,7 +42,9 @@ public class TelNet {
     }
 
     // Zeichnet das gefundene optimale Telefonnetz mit der Größe xMax*yMax in ein Fenster.
-    public void	drawOptTelNet(int xMax, int yMax) {
+    public void	drawOptTelNet(int xMax, int yMax) throws IllegalStateException {
+        checkSuccess();
+
         StdDraw.setCanvasSize(xMax, yMax);
         for(TelVerbindung telVer : getOptTelNet()) {
             StdDraw.line(telVer.u.x, telVer.u.y, telVer.v.x, telVer.v.y);
@@ -59,13 +61,27 @@ public class TelNet {
     }
 
     // Liefert ein optimales Telefonnetz als Liste von Telefonverbindungen zurück.
-    public List<TelVerbindung> getOptTelNet() {
+    public List<TelVerbindung> getOptTelNet() throws IllegalStateException {
+        checkSuccess();
+
         throw new NotImplementedException();
     }
 
     // Liefert die Gesamtkosten eines optimalen Telefonnetzes zurück.
     public int getOptTelNetKosten() {
-        throw new NotImplementedException();
+        checkSuccess();
+
+        List<TelVerbindung> verbindungen = getOptTelNet();
+        int total = 0;
+        for(TelVerbindung telVer : verbindungen) {
+            total += telVer.c;
+        }
+        return  total;
+    }
+
+    // Prüft, ob computeOptTelNet() erfolgreich ausgeführt wurde.
+    private void checkSuccess() throws IllegalStateException {
+        if (!computeOptTelNet()) throw new IllegalStateException("Der minimal aufspannende Baum wurde nicht gefunden");
     }
 
     static void	main(String[] args) {
@@ -74,10 +90,17 @@ public class TelNet {
 
     // Liefert die Anzahl der Knoten des Telefonnetzes zurück.
     public int size() {
-        throw new NotImplementedException();
+        return telKnoten.size();
     }
 
     public String toString() {
-        throw new NotImplementedException();
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("Telefonnetz mit " + size() + " Knoten: Start -(Gewicht)- Ziel\n");
+        for(TelVerbindung telVer : getOptTelNet()) {
+            sb.append(telVer.u + " -(" + telVer.c + ")- " + telVer.v + "\n");
+        }
+
+        return sb.toString();
     }
 }
