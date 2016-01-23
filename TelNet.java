@@ -2,6 +2,7 @@ package Telefonnetz;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
+import java.awt.*;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
@@ -34,7 +35,7 @@ public class TelNet {
         List<TelVerbindung> minSpanTree = new LinkedList<>();
 
         while (forest.size() != 1 && !edges.isEmpty()) {
-            
+            throw new NotImplementedException();
         }
 
         return false;
@@ -42,12 +43,19 @@ public class TelNet {
 
     // Zeichnet das gefundene optimale Telefonnetz mit der Größe xMax*yMax in ein Fenster.
     public void	drawOptTelNet(int xMax, int yMax) {
-        throw new NotImplementedException();
+        StdDraw.setCanvasSize(xMax, yMax);
+        for(TelVerbindung telVer : getOptTelNet()) {
+            StdDraw.line(telVer.u.x, telVer.u.y, telVer.v.x, telVer.v.y);
+        }
     }
 
     //Fügt n zufällige Telefonknoten zum Netz dazu mit x-Koordinate aus [0,xMax] und y-Koordinate aus [0,yMax].
     public void	generateRandomTelNet(int n, int xMax, int yMax) {
-        throw new NotImplementedException();
+        for (int i = 0; i < n; i++) {
+            int x = (int)(xMax * RNG.nextDouble());
+            int y = (int)(yMax * RNG.nextDouble());
+            telKnoten.add(new TelKnoten(x, y));
+        }
     }
 
     // Liefert ein optimales Telefonnetz als Liste von Telefonverbindungen zurück.
