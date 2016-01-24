@@ -47,8 +47,7 @@ public class TelNet {
     public boolean computeOptTelNet() {
         List<TelVerbindung> spanTree = new LinkedList<>();
         UnionFind forest = new UnionFind(telKnoten.size());
-        PriorityQueue<TelVerbindung> edges = new PriorityQueue<>(new TelVerbindungComparator());
-        edges.addAll(telVerbindungen);
+        PriorityQueue<TelVerbindung> edges = new PriorityQueue<>(telVerbindungen);
 
         while (forest.size() != 1 && !edges.isEmpty()) {
             TelVerbindung telVer = edges.poll();
@@ -84,6 +83,7 @@ public class TelNet {
     public void	drawOptTelNet(int xMax, int yMax) throws IllegalStateException {
         checkSuccess();
 
+        StdDraw.clear();
         StdDraw.setCanvasSize(xMax, yMax);
         for(TelVerbindung telVer : getOptTelNet()) {
             int x1 = telVer.getSource().x;
@@ -135,8 +135,8 @@ public class TelNet {
     }
 
     public static void	main(String[] args) {
-        TelNet net = new TelNet(100);
-        net.generateRandomTelNet(100, 500, 500);
+        TelNet net = new TelNet(1000);
+        net.generateRandomTelNet(500, 500, 500);
         net.computeOptTelNet();
         net.drawOptTelNet(500, 500);
     }

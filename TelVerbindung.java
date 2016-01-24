@@ -1,8 +1,6 @@
 package Telefonnetz;
 
-import java.util.Comparator;
-
-public class TelVerbindung {
+public class TelVerbindung implements Comparable  {
 	private int c;
 	private TelKnoten u;
 	private TelKnoten v;
@@ -11,14 +9,6 @@ public class TelVerbindung {
 		this.u = u;
 		this.v = v;
 		this.c = c;
-	}
-
-	public int compareTo(TelVerbindung t2){
-		if(this.c < t2.getWeight()){
-			return 1;
-		} else if (this.c > t2.getWeight()){
-			return -1;
-		} else return 0;
 	}
 
 	public int getWeight(){
@@ -36,5 +26,13 @@ public class TelVerbindung {
 	public String toString(){
 		return "Telefonverndung von " + getSource().toString() +
 				" nach " + getTarget().toString() + " mit dem Gewicht " + getWeight();
+	}
+
+	@Override
+	public int compareTo(Object o) {
+		if (o.getClass() != this.getClass()) throw new IllegalArgumentException("Type mismatch. Expected: "
+													+ this.getClass() + ". Received: " + o.getClass() + ".");
+		TelVerbindung tv = (TelVerbindung) o;
+		return Integer.compare(tv.getWeight(), this.getWeight());
 	}
 }
