@@ -1,25 +1,28 @@
 
-public class TelVerbindung implements Comparable<TelVerbindung> {
-	int c;
-	TelKnoten u;
-	TelKnoten v;
+public class TelVerbindung implements Comparable<TelVerbindung>{
+	public final int weight;
+	public TelKnoten u;
+	public TelKnoten v;
 	
-	public TelVerbindung(TelKnoten u, TelKnoten v, int c){
+	public TelVerbindung(TelKnoten u, TelKnoten v, int w){
 		this.u = u;
 		this.v = v;
-		this.c = c;
+		this.weight = w;
 	}
 	
-	public int compareTo(TelVerbindung t2){
-		if(this.c < t2.getWeight()){
+	@Override
+	public int compareTo(TelVerbindung cmp) {
+		if(weight > cmp.getWeight()){
 			return 1;
-		} else if (this.c > t2.getWeight()){
+		}
+		if(weight < cmp.getWeight()){
 			return -1;
-		} else return 0;
+		}
+		return 0;
 	}
 	
 	public int getWeight(){
-		return this.c;
+		return this.weight;
 	}
 	
 	public TelKnoten getSource(){
@@ -32,7 +35,6 @@ public class TelVerbindung implements Comparable<TelVerbindung> {
 	
 	
 	public String toString(){
-		return "Telefonverndung von " + getSource().toString() + 
-				" nach " + getTarget().toString() + " mit dem Gewicht " + getWeight();
+		return "Telefonverndung von " + getSource().toString() + " nach " + getTarget().toString() + " mit dem Gewicht " + getWeight();
 	}
 }

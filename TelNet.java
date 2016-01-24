@@ -4,9 +4,9 @@ import java.util.List;
 import java.util.PriorityQueue;
 
 public class TelNet {
-	int lbg;
+	double lbg = Double.POSITIVE_INFINITY;
 	public List<TelVerbindung> connections;
-	public List<TelKnoten> edges;
+	public List<TelKnoten> knoten;
 	List<TelVerbindung> minSpanTree = new LinkedList<>();
 	int tXMax;
 	int tYMax;
@@ -15,7 +15,7 @@ public class TelNet {
 	public TelNet(int lbg) {
 		this.lbg = lbg;
 		connections = new LinkedList<>();
-		edges = new LinkedList<>();
+		knoten = new LinkedList<>();
 		minSpanTree = new LinkedList<>();
 	}
 
@@ -26,12 +26,12 @@ public class TelNet {
 		if(y > tYMax)
 			tYMax = y;
 		TelKnoten v = new TelKnoten(x,y);
-		if(edges.contains(v)){
+		if(knoten.contains(v)){
 			return false;
 		}
 		else
-			edges.add(v);
-		for(TelKnoten n : edges){
+			knoten.add(v);
+		for(TelKnoten n : knoten){
 			if(n != v){
 			int cost = (int)cost(n,v);
 				if(cost < lbg){
@@ -57,7 +57,7 @@ public class TelNet {
 			int counter = 0;
 			int one = 0;
 			int two = 0;
-			for (TelKnoten tk : edges) {
+			for (TelKnoten tk : knoten) {
 				if (tk == v) {
 					one = counter;
 				}
@@ -82,7 +82,7 @@ public class TelNet {
 	}
 
 	public int size() {
-		return edges.size();
+		return knoten.size();
 	}
 
 	public List<TelVerbindung> getOptTelNet()
@@ -104,7 +104,7 @@ public class TelNet {
 		StdDraw.clear();
 		StdDraw.setCanvasSize(xMax, yMax);
 		List<TelVerbindung> list = getOptTelNet();
-		float pen = (((float)1)/(tXMax*10));
+		float pen = (((float)1)/(tXMax));
 		float factorX = (float)1/(tXMax);
 		float factorY = (float)1/(tYMax);
 		for(TelVerbindung v : list){
@@ -114,11 +114,11 @@ public class TelNet {
 			float x2 = (v.getTarget().getX()) * factorX;
 			float y2 = (v.getTarget().getY()) * factorY;
 			StdDraw.setPenColor(Color.BLUE);
-			StdDraw.filledCircle(x1,y1, pen);//Draws the Node 1
-			StdDraw.filledCircle(x2, y2, pen);//Draws the Node2 
-			StdDraw.setPenColor(Color.RED);
-			StdDraw.line(x1, y1, x2, y1); //Draws the Line x side			
-			StdDraw.line(x2, y1, x2, y2);//Draws the Line y side
+			StdDraw.filledCircle(x1,y1, pen);
+			StdDraw.filledCircle(x2, y2, pen);
+			StdDraw.setPenColor(Color.GRAY);
+			StdDraw.line(x1, y1, x2, y1);	
+			StdDraw.line(x2, y1, x2, y2);
 			
 		}
 		StdDraw.show();
@@ -133,7 +133,7 @@ public class TelNet {
 	}
 	
 	public static void main(String[] args){
-		TelNet net = new TelNet(100);
+		TelNet net = new TelNet(100);		
 		net.generateRandomTelNet(1000, 1000, 1000);
 		net.computeOptTelNet();
 		net.drawOptTelNet(700,700);

@@ -10,12 +10,12 @@ public class UnionFind {
 		p = new int[n];
 		rang = new int[n];
 		for (int i = 0; i < p.length; i++){
-			p[i] = 0;
+			p[i] = -1;
 		}
 	}
 	
 	public int find(int e){
-		if (p[e] == 0){
+		if (p[e] == -1){
 			return e;
 		} else {
 			return find(p[e]);
@@ -47,10 +47,5 @@ public class UnionFind {
 	
 	public String toString() {
 	    return "<UnionFind\np " + Arrays.toString(p) + "\nr " + Arrays.toString(rang) + "\n>";
-	 }
-	
-	
-
-	
-	
+	}
 }
