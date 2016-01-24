@@ -1,9 +1,11 @@
 package Telefonnetz;
 
+import java.util.Comparator;
+
 public class TelVerbindung {
-	int c;
-	TelKnoten u;
-	TelKnoten v;
+	private int c;
+	private TelKnoten u;
+	private TelKnoten v;
 
 	public TelVerbindung(TelKnoten u, TelKnoten v, int c){
 		this.u = u;
