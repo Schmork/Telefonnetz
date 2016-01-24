@@ -1,5 +1,5 @@
 
-public class TelVerbindung {
+public class TelVerbindung implements Comparable<TelVerbindung> {
 	int c;
 	TelKnoten u;
 	TelKnoten v;

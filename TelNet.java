@@ -8,19 +8,40 @@ public class TelNet {
 	public List<TelVerbindung> connections;
 	public List<TelKnoten> edges;
 	List<TelVerbindung> minSpanTree = new LinkedList<>();
+	int tXMax;
+	int tYMax;
+	
 
 	public TelNet(int lbg) {
 		this.lbg = lbg;
 		connections = new LinkedList<>();
 		edges = new LinkedList<>();
+		minSpanTree = new LinkedList<>();
 	}
 
 	public boolean addTelKnoten(int x, int y) {
-		TelKnoten tk = new TelKnoten(x, y);
-		if (edges.contains(tk))
+		
+		if(x > tXMax)
+			tXMax = x;
+		if(y > tYMax)
+			tYMax = y;
+		TelKnoten v = new TelKnoten(x,y);
+		if(edges.contains(v)){
 			return false;
-
-		edges.add(tk);
+		}
+		else
+			edges.add(v);
+		for(TelKnoten n : edges){
+			if(n != v){
+			int cost = (int)cost(n,v);
+				if(cost < lbg){
+					TelVerbindung c = new TelVerbindung(n,v,cost);
+					TelVerbindung cr = new TelVerbindung(v,n,cost);
+					connections.add(c);
+					connections.add(cr);
+				}
+			}
+		}
 		return true;
 	}
 
@@ -53,9 +74,9 @@ public class TelNet {
 				spantree.add(vw);
 			}
 		}
-		if (telverb.isEmpty() && forest.size() != 1) {
-			return false;
-		}
+//		if (telverb.isEmpty() && forest.size() != 1) {
+//			return false;
+//		}
 		minSpanTree.addAll(spantree);
 		return true;
 	}
@@ -83,15 +104,15 @@ public class TelNet {
 		StdDraw.clear();
 		StdDraw.setCanvasSize(xMax, yMax);
 		List<TelVerbindung> list = getOptTelNet();
-		float pen = (((float)1));
-		float factorX = (float)1;
-		float factorY = (float)1;
+		float pen = (((float)1)/(tXMax*10));
+		float factorX = (float)1/(tXMax);
+		float factorY = (float)1/(tYMax);
 		for(TelVerbindung v : list){
 			
-			float x1 = (v.getSource().x) * factorX;
-			float y1 = (v.getSource().y) * factorY;
-			float x2 = (v.getTarget().x) * factorX;
-			float y2 = (v.getTarget().y) * factorY;
+			float x1 = (v.getSource().getX()) * factorX;
+			float y1 = (v.getSource().getY()) * factorY;
+			float x2 = (v.getTarget().getX()) * factorX;
+			float y2 = (v.getTarget().getY()) * factorY;
 			StdDraw.setPenColor(Color.BLUE);
 			StdDraw.filledCircle(x1,y1, pen);//Draws the Node 1
 			StdDraw.filledCircle(x2, y2, pen);//Draws the Node2 
@@ -111,4 +132,16 @@ public class TelNet {
 		}	
 	}
 	
+	public static void main(String[] args){
+		TelNet net = new TelNet(100);
+		net.generateRandomTelNet(1000, 1000, 1000);
+		net.computeOptTelNet();
+		net.drawOptTelNet(700,700);
+		
+	}
+	
+	public double cost(TelKnoten a, TelKnoten b){
+		int dist = Math.abs(a.getX()-b.getX())+Math.abs(a.getY()-b.getY());
+		return dist;
+	}
 }
