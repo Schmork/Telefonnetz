@@ -24,15 +24,15 @@ public class TelVerbindung implements Comparable  {
 	}
 
 	public String toString(){
-		return "Telefonverndung von " + getSource().toString() +
-				" nach " + getTarget().toString() + " mit dem Gewicht " + getWeight();
+		return "Verbindung von " + getSource().toString() +
+				" nach " + getTarget().toString() + " mit Gewicht " + getWeight() + "\n";
 	}
 
 	@Override
 	public int compareTo(Object o) {
-		if (o.getClass() != this.getClass()) throw new IllegalArgumentException("Type mismatch. Expected: "
-													+ this.getClass() + ". Received: " + o.getClass() + ".");
+		if (o.getClass() != getClass()) throw new IllegalArgumentException("Type mismatch. Expected: "
+													+ getClass() + ". Received: " + o.getClass() + ".");
 		TelVerbindung tv = (TelVerbindung) o;
-		return Integer.compare(tv.getWeight(), this.getWeight());
+		return Integer.compare(getWeight(), tv.getWeight());
 	}
 }

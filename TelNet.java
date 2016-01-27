@@ -1,6 +1,5 @@
 package Telefonnetz;
 
-import javax.swing.*;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
@@ -11,6 +10,8 @@ public class TelNet {
     Map<TelKnoten, Integer> telKnoten;
     List<TelVerbindung> telVerbindungen;
     List<TelVerbindung> minSpanTree;
+    boolean hasOptimalTelNet = false;
+    Scale scale;        // für Mausinteraktion
 
     // Legt ein neues Telefonnetz mit dem Leitungsbegrenzungswert lbg an.
     public TelNet(int lbg) {
@@ -18,6 +19,7 @@ public class TelNet {
         telKnoten = new HashMap<>();
         telVerbindungen = new LinkedList<>();
         minSpanTree = new LinkedList<>();
+        hasOptimalTelNet = false;
     }
 
     // Fügt einen neuen Telefonknoten mit Koordinate (x,y) dazu.
@@ -45,7 +47,7 @@ public class TelNet {
     // Berechnet ein optimales Telefonnetz als minimal aufspannenden Baum mit dem Algorithmus von Kruskal.
     // true, falls es einen minimal aufspannenden Baum gibt. Sonst false.
     public boolean computeOptTelNet() {
-        List<TelVerbindung> spanTree = new LinkedList<>();
+        hasOptimalTelNet = false;
         UnionFind forest = new UnionFind(telKnoten.size());
         PriorityQueue<TelVerbindung> edges = new PriorityQueue<>(telVerbindungen);
 
@@ -63,17 +65,25 @@ public class TelNet {
 
             if (t1 != t2) {
                 forest.union(t1, t2);
-                spanTree.add(telVer);
+                minSpanTree.add(telVer);
             }
         }
 
-		if (edges.isEmpty() && forest.size() != 1) {
-        	return false;
-        } else {
-            minSpanTree.clear();
-            minSpanTree.addAll(spanTree);
-            return true;
+		if (edges.isEmpty() && forest.size() != 1) return false;
+        hasOptimalTelNet = true;
+        return true;
+    }
+
+    private class Scale {
+        float x, y;
+        public Scale(float x, float y) {
+            this.x = x;
+            this.y = y;
         }
+    }
+
+    private Scale getScale() {
+        return new Scale(1.4f, 5);
     }
 
     // Zeichnet das gefundene optimale Telefonnetz mit der Größe xMax*yMax in ein Fenster.
@@ -91,7 +101,9 @@ public class TelNet {
         float factorX = 1f / xMax * aspect;
         float factorY = 1f / yMax;
 
-        float radius = Math.min(factorX, factorY) * 0.45f;  // benachbarte Kreise würden überlappen falls > 0.5f
+        scale = new Scale(factorX, factorY);        // für spätere Mausinteraktion
+
+        float radius = Math.min(factorX, factorY) * 0.75f;  // benachbarte Kreise überlappen falls > 0.5f
 
         for(TelVerbindung telVer : getOptTelNet()) {
             float x1 = telVer.getSource().x * factorX;
@@ -106,13 +118,20 @@ public class TelNet {
             StdDraw.setPenColor(Color.GRAY);
             StdDraw.line(x1, y1, x2, y1);
             StdDraw.line(x2, y1, x2, y2);
+
+            StdDraw.setTitle("Verbindungen der Länge " + telVer.getWeight());
+        }
+        StdDraw.setTitle("Optimales Telefonnetz mit " + minSpanTree.size() + " Verbindungen gezeichnet. Gesamtlänge: " + getOptTelNetKosten());
+
+        if (StdDraw.mouseX() != 0) {
+            StdDraw.square(StdDraw.mouseX(), StdDraw.mouseY(), 5);
         }
     }
 
     //Fügt n zufällige Telefonknoten zum Netz dazu mit x-Koordinate aus [0,xMax] und y-Koordinate aus [0,yMax].
     public void	generateRandomTelNet(int n, int xMax, int yMax) {
-
-        int maxDurchlauf = 100000;              // wie oft soll ein neuer Ort gesucht werden, falls kein freier gefunden wurde?
+        hasOptimalTelNet = false;
+        int maxDurchlauf = 9000000;              // wie oft soll ein neuer Ort gesucht werden, falls kein freier gefunden wurde?
         for (int i = 0; i < n; i++) {
 
             int x, y;
@@ -128,7 +147,7 @@ public class TelNet {
                         break;
                     }
                 }
-            } while (bereitsVorhanden && durchlauf++ < maxDurchlauf);
+            } while (bereitsVorhanden && durchlauf++ < maxDurchlauf);   // nicht endlos prüfen
 
             if (bereitsVorhanden) {
                 System.out.println("Selbst nach " + maxDurchlauf + " Versuchen konnte kein freier Platz für Knoten " + telKnoten.size() + " gefunden werden.");
@@ -159,20 +178,44 @@ public class TelNet {
 
     // Prüft, ob computeOptTelNet() erfolgreich ausgeführt wurde.
     private void checkSuccess() throws IllegalStateException {
-        if (!computeOptTelNet()) throw new IllegalStateException("Der minimal aufspannende Baum wurde nicht gefunden");
+        if (!hasOptimalTelNet) throw new IllegalStateException("Der minimal aufspannende Baum wurde nicht gefunden");
     }
 
     public static void	main(String[] args) {
 
-        int lbg = 150;
-        int xMax = 300;
-        int yMax = 200;//xMax;
-        int nodes = 200;
+        int lbg = 20;
+        int xMax = 80;
+        int yMax = 60;//xMax;
+        int nodes = 80;
 
         TelNet net = new TelNet(lbg);
         net.generateRandomTelNet(nodes, xMax, yMax);
         net.computeOptTelNet();
+        System.out.println("Gesamtkosten: " + net.getOptTelNetKosten());
         net.drawOptTelNet(xMax, yMax);
+
+    /*                              hier dran wird noch gearbeitet
+        TelKnoten mausKnoten;
+
+        while (true) {
+
+            //if (StdDraw.mousePressed()) {
+                int x = (int)(StdDraw.mouseX() / net.scale.x);
+                int y = (int)(StdDraw.mouseY() / net.scale.y);
+
+                StdDraw.setPenColor(Color.GREEN);
+
+                for(TelKnoten tk : net.telKnoten.keySet()) {
+                    if (tk.x == x && tk.y == y) {
+                        StdDraw.filledCircle(x, y, .01);
+                        break;
+                    }
+                }
+                StdDraw.setTitle(x + ", " + y);
+            //}
+            StdDraw.show(10);
+        }
+        */
     }
 
     // Liefert die Anzahl der Knoten des Telefonnetzes zurück.

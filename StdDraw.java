@@ -22,6 +22,9 @@
 
 package Telefonnetz;
 
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
+
 import java.io.*;
 import java.net.*;
 import java.awt.*;
@@ -923,7 +926,6 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
         }
     }
 
-
     /**
      * This method cannot be called directly.
      */
@@ -978,7 +980,6 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
             mouseY = StdDraw.userY(e.getY());
         }
     }
-
 
    /*************************************************************************
     *  Keyboard interactions.
@@ -1037,7 +1038,9 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
     }
 
 
-
+    public static void setTitle(String title) {
+        frame.setTitle(title);
+    }
 
     /**
      * Test client.
@@ -1069,6 +1072,5 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
         StdDraw.setPenColor(StdDraw.BLACK);
         StdDraw.text(6, 1, "black text");
     }
-
 }
 
